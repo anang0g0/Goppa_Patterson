@@ -4295,7 +4295,7 @@ void fun()
   }
 }
 
-OP sin2(unsigned short zz[])
+OP zin(unsigned short zz[])
 {
   int i, j;
   OP s = {0};
@@ -4550,22 +4550,24 @@ int main(void)
     // エラーベクトルを生成する
     memset(z1, 0, sizeof(z1));
     mkerr(z1, T * 2);
+/*
     f = synd(z1);
     v = patterson(w, f);
     ero(v);
     exit(1);
-
+*/
     // encryotion
     test(w, z1);
     wait();
 
     // シンドロームを計算する
-    f = sin2(z1);
+    f = zin(z1);
     printpol(o2v(f));
     printf(" ==syndrome\n");
 
     // 復号化の本体
     v = patterson(w, f);
+
     // エラー表示
     ero2(v);
 
