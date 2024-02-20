@@ -8,9 +8,9 @@
 #define X (K) * E
 #define AY (K / 2 + 1) * E
 
-MTX inv_S = {0};
-MTX S = {0};
-MTX SS = {0};
+static MTX inv_S = {0};
+static MTX S = {0};
+static MTX SS = {0};
 
 extern void makeS();
 
@@ -27,7 +27,7 @@ int is_reg(MTX cc, MTX *R)
   unsigned char inv_a[K * E][K * E] = {0}; //ここに逆行列が入る
   unsigned char buf;                       //一時的なデータを蓄える
   int n = K * E;                           //配列の次数
-  MTX O = {0};
+  static MTX O = {0};
 
   while (flg != F)
   {

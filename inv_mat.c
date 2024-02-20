@@ -92,7 +92,7 @@ MTX gauss(MTX a)
 {
   int i, j, k, buf = 0;
   unsigned short ff = 0, inv_a[F][F] = {0};
-  MTX TT = {0}, b;
+  static MTX TT = {0}, b;
   b = a;
   // unsigned short a[F][F]={0};
   //\92P\88ʍs\97\F1\82\F0\8D\EC\82\E9
@@ -167,7 +167,7 @@ MTX matinv(MTX a, int n)
   int i, j, k, count; //カウンタ
   // MTX a={0};
   unsigned short c[N][N] = {0};
-  MTX z = {0};
+  static MTX z = {0};
   unsigned short cc[N][N] = {0};
 
 lab:
@@ -322,7 +322,7 @@ lab:
 MTX mulmat(MTX A, MTX B, int flg)
 {
   int i, j, k;
-  MTX tmp = {0};
+  static MTX tmp = {0};
 
   if (flg == 1)
   {
@@ -379,7 +379,7 @@ MTX mulmat(MTX A, MTX B, int flg)
 void mmul(MTX A, MTX B)
 {
   int i, j, k;
-  MTX tmp = {0};
+  static MTX tmp = {0};
 
   for (i = 0; i < A.col; i++)
   {

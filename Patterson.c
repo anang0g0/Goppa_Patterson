@@ -49,8 +49,8 @@ unsigned short sy[K] = {0};
 // Goppa多項式
 static unsigned short g[K + 1] = {1, 0, 0, 0, 1, 0, 1};
 //{1,0,1,1};
-MTX BB = {0};
-MTX H = {0};
+static MTX BB = {0};
+static MTX H = {0};
 
 unsigned int AA = 0, B = 0; //, C = 0, A2 = 0;
 
@@ -3504,7 +3504,7 @@ vec sol(MTX a)
 int mykey(unsigned short *out, vec x)
 {
   unsigned short mat[K + 1][K] = {0};
-  MTX a = {0};
+  static MTX a = {0};
   int i, j;
 
   // fill matrix
@@ -3817,7 +3817,7 @@ OP pubkeygen()
   unsigned short dd[K] = {0};
   OP w = {0};
   vec v = {0};
-  MTX O, Q;
+  static MTX O, Q;
 
   w = mkg();
   printpol(o2v(w));
