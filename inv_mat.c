@@ -381,11 +381,11 @@ void mmul(MTX A, MTX B)
   int i, j, k;
   static MTX tmp = {0};
 
-  for (i = 0; i < A.col; i++)
+  for (i = 0; i < A.b.col; i++)
   {
-    for (j = 0; j < B.col; j++)
+    for (j = 0; j < B.b.col; j++)
     {
-      for (k = 0; k < A.row; k++)
+      for (k = 0; k < A.b.row; k++)
       {
         tmp.x[i][j] ^= gf[mlt(fg[A.x[i][k]], fg[B.x[k][j]])];
       }

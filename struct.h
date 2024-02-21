@@ -106,8 +106,8 @@ unsigned int rotate_left(unsigned int x, int n)
   assert(0 < n && n < 32);
   return (x << n) | (x >> (32 - n));
 }
-*/
-/*
+
+
 typedef union
 {
   unsigned long long int u[8];
@@ -142,10 +142,24 @@ typedef struct pub
 */
 
 typedef struct {
+vec v[N];
+} ext;
+
+typedef union 
+{
   unsigned short x[N][N];
-  OP f;
+  vec a[N];
+} maya;
+
+typedef struct {
   int row; //行
   int col; //列
+} ja;
+ 
+typedef union {
+  unsigned short x[N][N];
+  vec a[N];
+  ja b;
 } MTX;
 
 /*
