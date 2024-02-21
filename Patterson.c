@@ -4606,7 +4606,7 @@ int main(void)
   // opt(argc, argv, &k, &s);
   int n = bitsize(N);
   gen_gf(n, N, 1);
-  put_gf(N);
+  //+put_gf(N);
   printf("GF[%d] の生成に成功しました。\n", N);
 
   // kabatiansky example
