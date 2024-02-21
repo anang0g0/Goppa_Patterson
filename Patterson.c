@@ -1922,11 +1922,44 @@ int ben_or(OP f)
       }
     }
   */
-
-  // #pragma omp parallel num_threads(8) //omp_get_max_threads()) //num_threads(TH)
+  if (E % 2 == 1)
   {
-    // #pragma omp parallel for
-    // #pragma omp for schedule(static)
+#pragma omp parallel num_threads(8) // omp_get_max_threads()) //num_threads(TH)
+    {
+      // #pragma omp parallel for
+#pragma omp for schedule(static)
+      for (i = 0; i < n / 2 + 1; i++)
+      {
+        printf("i=%d\n", i);
+
+        flg = 1;
+        // irreducible over GH(8192) 2^13
+        r = opowmod(r, f, m);
+
+        // irreducible over GF2
+        // r=omod(opow(r,2),f);
+
+        u = oadd(r, s);
+        if (deg(o2v(u)) == 0 && LT(u).a == 0)
+          exit(1); // return -1;
+        if (deg(o2v(u)) == 0 && LT(u).a == 1)
+        {
+          // i++;
+          flg = 0;
+        }
+        if (deg(o2v(u)) > 0)
+          u = gcd(f, u);
+
+        if (deg(o2v(u)) > 0)
+          exit(1); // return -1;
+
+        // if (flg == 1)
+        //   i++;
+      }
+    }
+  }
+  else
+  {
     for (i = 0; i < n / 2 + 1; i++)
     {
       printf("i=%d\n", i);
@@ -1956,7 +1989,6 @@ int ben_or(OP f)
       //   i++;
     }
   }
-
   return 0;
 }
 
@@ -3603,22 +3635,22 @@ aa:
   l = -1;
   vec pp = {0}, tt = {0};
 
-  if (E%2 == 1)
+  if (E % 2 == 1)
   {
     for (i = 0; i < K; i++)
       pp.x[i] = rand() % N;
-      tt.x[K]=1;
+    tt.x[K] = 1;
     mykey(tt.x, pp);
-    l=ben_or(v2o(tt));
-    if(l<0)
-    exit(1);
+    l = ben_or(v2o(tt));
+    if (l < 0)
+      exit(1);
   }
   else
   {
     while (l < 0)
     {
       tt = o2v(mkpol());
-       tt.x[K] = 1;
+      tt.x[K] = 1;
       l = ben_or(v2o(tt));
       if (l == 0)
       {
@@ -3627,8 +3659,8 @@ aa:
         printf(" ==irr\n");
         // exit(1);
       }
-      //if(l<0)
-      //exit(1);
+      // if(l<0)
+      // exit(1);
     }
   }
   // w = v2o(tt);
@@ -4570,12 +4602,12 @@ int main(void)
     printf("configuration error! K is too big K\n");
     exit(1);
   }
-    //int s, k;
-    //opt(argc, argv, &k, &s);
-    int n = bitsize(N);
-    gen_gf(n, N, 1);
-    put_gf(N);
-    printf("GF[%d] の生成に成功しました。\n", N);
+  // int s, k;
+  // opt(argc, argv, &k, &s);
+  int n = bitsize(N);
+  gen_gf(n, N, 1);
+  put_gf(N);
+  printf("GF[%d] の生成に成功しました。\n", N);
 
   // kabatiansky example
   unsigned short s[K + 1] = {0, 15, 1, 9, 13, 1, 14};
