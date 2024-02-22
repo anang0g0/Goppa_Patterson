@@ -4219,11 +4219,11 @@ int ero2(vec v)
   {
     if (i == 0)
     {
-      xa[v.x[i]] = 1;
+      //xa[v.x[i]] = 1;
       // printf("error position=%d %d う\n", i, v.x[i]);
-      count++;
+      //count++;
     }
-    if (i > 0 && v.x[i] > 0)
+    if (v.x[i] > 0)
     {
       xa[v.x[i]] = 1;
       // printf("error position=%d %d お\n", i, v.x[i]);
@@ -4282,11 +4282,11 @@ int ero2(vec v)
   {
     if (ya[i] > 0 && i == 0)
     {
-      printf("error position=%d う\n", i);
+      printf("error position=%d %d う\n", i,ya[i]);
     }
     else if (ya[i] > 0)
     {
-      printf("error position=%d お\n", i);
+      printf("error position=%d %d お\n", i,ya[i]);
     }
   }
   // exit(1);
