@@ -1,5 +1,7 @@
 
 /* -*- mode: C; coding:utf-8 -*- */
+#include <xmmintrin.h>
+#include <immintrin.h>
 
 //monomial
 typedef struct
@@ -14,9 +16,11 @@ typedef struct
   oterm t[DEG]; //単項式の配列として多項式を表現する
 } OP;
 
-typedef struct 
+typedef union 
 {
   unsigned short x[DEG]; //配列の添字を次数に、配列の値を係数に持つ多項式の表現
+  unsigned long long d[DEG/4];
+  __m256 a[DEG/16];
 } vec;
 
 typedef struct {
@@ -157,7 +161,15 @@ typedef struct {
 } ja;
  
 typedef union {
+  unsigned short x[16];
+  unsigned long long d[4];
+  __m256 a;
+} Uh;
+
+typedef union {
   unsigned short x[N][N];
+  unsigned long long d[N][N/4];
+  __m256 c[N][N/16];
   vec a[N];
   ja b;
 } MTX;

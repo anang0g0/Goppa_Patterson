@@ -1717,7 +1717,7 @@ OP bib(int i, OP d)
 
   OP t[T] = {0};
   // omp_set_num_threads(omp_get_max_threads());
-  id = 8; // omp_get_thread_num();
+  id = omp_get_thread_num();
   t[id] = d;
 
   // #pragma omp parallel for
@@ -2318,7 +2318,8 @@ unsigned short HH[N][K];
 
 void toByte(MTX SH)
 {
-  vec v = {0};
+  //vec v = {0};
+  unsigned short x;
   int i, j, k, l, cnt, id = omp_get_thread_num();
 
   {
@@ -2326,19 +2327,15 @@ void toByte(MTX SH)
     for (i = 0; i < N; i++)
     {
       printf("数え上げ %d\n", i);
-      // #pragma omp parallel for
-      // #pragma omp parallel num_threads(omp_get_max_threads()) //num_threads(TH)
-      //{
-      // #pragma omp parallel for schedule(static)
       for (j = 0; j < K; j++)
       {
         cnt = 0;
         k = j * E;
-        for (l = 0; l < E; l++)
-          v.x[l] = SH.x[i][k + l];
-
-        HH[i][j] = v2i(v);
-        // printf("%d,", HH[i][j]);
+        x=0;
+        for (l = 0; l < E; l++){
+          x ^= (SH.x[i][k + l]<<l);
+          }
+        HH[i][j] = x;//v2i(v);
       }
       // fwrite(dd, 1, E * K, ff);
       // printf("\n");
@@ -4602,12 +4599,21 @@ int main(void)
     printf("configuration error! K is too big K\n");
     exit(1);
   }
-  // int s, k;
-  // opt(argc, argv, &k, &s);
-  int n = bitsize(N);
-  gen_gf(n, N, 1);
-  //+put_gf(N);
+  gen_gf(E, N, 1);
   printf("GF[%d] の生成に成功しました。\n", N);
+
+
+Uh uu;
+
+for(int i=0;i<16;i++)
+uu.x[i]=i;
+for(int i=0;i<16;i++)
+printf("x=%d,",uu.x[i]);
+printf("\n");
+for(int i=0;i<4;i++)
+printf("%llx,",uu.d[i]);
+printf("\n");
+//exit(1);
 
   // kabatiansky example
   unsigned short s[K + 1] = {0, 15, 1, 9, 13, 1, 14};
