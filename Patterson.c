@@ -25,7 +25,6 @@
 
 // #include "8192.h"
 // #include "4096.h"
-
 #include "global.h"
 #include "struct.h"
 #include "debug.c"
@@ -34,9 +33,8 @@
 #include "lu.c"
 #include "sha3.c"
 #include "inv_mat.c"
-
-// #include "vc3000.c"
-//  #include "golay.c"
+//#include "vc3000.c"
+// #include "golay.c"
 
 // #define TH omp_get_max_threads()
 #define REG 64
@@ -1749,7 +1747,7 @@ OP bibun(vec a)
     //  exit(1);
   }
   memset(ww, 0, sizeof(ww));
-#pragma omp parallel num_threads(8)
+  // #pragma omp parallel num_threads(8)
   for (i = 0; i < T; i++)
   {
     ww[i].t[0].a = a.x[i];
@@ -1910,85 +1908,35 @@ int ben_or(OP f)
   i = 1;
 
   // r(x)^{q^i} square pow mod
-  // omp_set_num_threads(omp_get_max_threads());
-  /*
-    #pragma omp parallel num_threads(8) //omp_get_max_threads()) //num_threads(TH)
-    {
-      // #pragma omp parallel for
-      #pragma omp for schedule(static)
-      for (i = 0; i < n/2+1; i++)
-      {
-        t[i] = bib(i, d);
-      }
-    }
-  */
-  if (E % 2 == 1)
+  while (i < n / 2 + 1)
   {
-#pragma omp parallel num_threads(8) // omp_get_max_threads()) //num_threads(TH)
+    printf("i=%d\n", i);
+
+    flg = 1;
+    // irreducible over GH(8192) 2^13
+    r = opowmod(r, f, m);
+
+    // irreducible over GF2
+    // r=omod(opow(r,2),f);
+
+    u = oadd(r, s);
+    if (deg(o2v(u)) == 0 && LT(u).a == 0)
+      return -1;
+    if (deg(o2v(u)) == 0 && LT(u).a == 1)
     {
-      // #pragma omp parallel for
-#pragma omp for schedule(static)
-      for (i = 0; i < n / 2 + 1; i++)
-      {
-        printf("i=%d\n", i);
-
-        flg = 1;
-        // irreducible over GH(8192) 2^13
-        r = opowmod(r, f, m);
-
-        // irreducible over GF2
-        // r=omod(opow(r,2),f);
-
-        u = oadd(r, s);
-        if (deg(o2v(u)) == 0 && LT(u).a == 0)
-          exit(1); // return -1;
-        if (deg(o2v(u)) == 0 && LT(u).a == 1)
-        {
-          // i++;
-          flg = 0;
-        }
-        if (deg(o2v(u)) > 0)
-          u = gcd(f, u);
-
-        if (deg(o2v(u)) > 0)
-          exit(1); // return -1;
-
-        // if (flg == 1)
-        //   i++;
-      }
+      i++;
+      flg = 0;
     }
+    if (deg(o2v(u)) > 0)
+      u = gcd(f, u);
+
+    if (deg(o2v(u)) > 0)
+      return -1;
+
+    if (flg == 1)
+      i++;
   }
-  else
-  {
-    for (i = 0; i < n / 2 + 1; i++)
-    {
-      printf("i=%d\n", i);
 
-      flg = 1;
-      // irreducible over GH(8192) 2^13
-      r = opowmod(r, f, m);
-
-      // irreducible over GF2
-      // r=omod(opow(r,2),f);
-
-      u = oadd(r, s);
-      if (deg(o2v(u)) == 0 && LT(u).a == 0)
-        return -1;
-      if (deg(o2v(u)) == 0 && LT(u).a == 1)
-      {
-        // i++;
-        flg = 0;
-      }
-      if (deg(o2v(u)) > 0)
-        u = gcd(f, u);
-
-      if (deg(o2v(u)) > 0)
-        return -1;
-
-      // if (flg == 1)
-      //   i++;
-    }
-  }
   return 0;
 }
 
@@ -2318,28 +2266,25 @@ unsigned short HH[N][K];
 
 void toByte(MTX SH)
 {
-  //vec v = {0};
-  unsigned short x;
-  int i, j, k, l, cnt, id = omp_get_thread_num();
+  vec v = {0};
+  int i, j, k, cnt;
 
+  for (i = 0; i < N; i++)
   {
-    // #pragma omp parallel for schedule(static) private(j,l)
-    for (i = 0; i < N; i++)
+    printf("戸田の定理 %d\n", i);
+    // #pragma omp parallel for
+    for (j = 0; j < K; j++)
     {
-      printf("数え上げ %d\n", i);
-      for (j = 0; j < K; j++)
-      {
-        cnt = 0;
-        k = j * E;
-        x=0;
-        for (l = 0; l < E; l++){
-          x ^= (SH.x[i][k + l]<<l);
-          }
-        HH[i][j] = x;//v2i(v);
-      }
-      // fwrite(dd, 1, E * K, ff);
-      // printf("\n");
+      cnt = 0;
+      for (k = j * E; k < j * E + E; k++)
+        v.x[cnt++] = SH.x[i][k];
+
+      HH[i][j] = v2i(v);
+      // printf("%d,", HH[i][j]);
+      //= BH[j][i];
     }
+    // fwrite(dd, 1, E * K, ff);
+    // printf("\n");
   }
   printf("end of byte\n");
   // exit(1);
@@ -2351,15 +2296,15 @@ void Pgen()
   unsigned int i, j;
   FILE *fp;
 
-  // fp = fopen("P.key", "wb");
+  fp = fopen("P.key", "wb");
   for (i = 0; i < N; i++)
     P[i] = i;
   random_shuffle(P, SIZE_OF_ARRAY(P));
   //  random_permutation(P);
   for (i = 0; i < N; i++)
     inv_P[P[i]] = i;
-  // fwrite(P, 2, N, fp);
-  // fclose(fp);
+  fwrite(P, 2, N, fp);
+  fclose(fp);
 
   // for (i = 0; i < N; i++)
   // printf ("%d,", inv_P[i]);
@@ -2863,10 +2808,10 @@ void encrypt(char buf[], unsigned char sk[64])
     printf("%d,", sk[i]);
   printf("\n");
 
-  // fp = fopen("enc.sk", "wb");
-  // fwrite(sy, 2, K, fp);
-  // fwrite(sk, 1, 64, fp);
-  // fclose(fp);
+  fp = fopen("enc.sk", "wb");
+  fwrite(sy, 2, K, fp);
+  fwrite(sk, 1, 64, fp);
+  fclose(fp);
 }
 
 void decrypt(OP w)
@@ -3369,124 +3314,64 @@ void GF_mul(unsigned short *out, unsigned short *in0, unsigned short *in1)
 
   for (i = (K - 1) * 2; i >= K; i--)
   {
-    // if(E==13)
+    if (K == 512)
     {
-      if (K == 512)
-      {
-        // GF(2^512) from sage
-        prod[i - K + 8] ^= prod[i];
-        prod[i - K + 5] ^= prod[i];
-        prod[i - K + 2] ^= prod[i];
-        prod[i - K + 0] ^= prod[i];
-      }
-      if (K == 256)
-      {
-        // GF(2^256) from sage
-        prod[i - K + 10] ^= prod[i];
-        prod[i - K + 5] ^= prod[i];
-        prod[i - K + 2] ^= prod[i];
-        prod[i - K + 0] ^= prod[i];
-      }
-      if (K == 128)
-      {
-        // 128
-        prod[i - K + 7] ^= prod[i];
-        prod[i - K + 2] ^= prod[i];
-        prod[i - K + 1] ^= prod[i];
-        prod[i - K + 0] ^= prod[i];
-      }
-            if (K == 96)
-      {
-        prod[i - K + 63] ^= prod[i];
-        prod[i - K + 61] ^= prod[i];
-        prod[i - K + 60] ^= prod[i];
-        prod[i - K + 59] ^= prod[i];
-        prod[i - K + 54] ^= prod[i];
-        prod[i - K + 50] ^= prod[i];
-        prod[i - K + 46] ^= prod[i];
-        prod[i - K + 44] ^= prod[i];
-        prod[i - K + 40] ^= prod[i];
-        prod[i - K + 37] ^= prod[i];
-        prod[i - K + 33] ^= prod[i];
-        prod[i - K + 32] ^= prod[i];
-        prod[i - K + 28] ^= prod[i];
-        prod[i - K + 24] ^= prod[i];
-        prod[i - K + 23] ^= prod[i];
-        prod[i - K + 21] ^= prod[i];
-        prod[i - K + 20] ^= prod[i];
-        prod[i - K + 19] ^= prod[i];
-        prod[i - K + 18] ^= prod[i];
-        prod[i - K + 16] ^= prod[i];
-        prod[i - K + 15] ^= prod[i];
-        prod[i - K + 14] ^= prod[i];
-        prod[i - K + 13] ^= prod[i];
-        prod[i - K + 11] ^= prod[i];
-        prod[i - K + 9] ^= prod[i];
-        prod[i - K + 8] ^= prod[i];
-        prod[i - K + 7] ^= prod[i];
-        prod[i - K + 6] ^= prod[i];
-        prod[i - K + 4] ^= prod[i];
-        prod[i - K + 3] ^= prod[i];
-        prod[i - K + 2] ^= prod[i];
-        prod[i - K + 0] ^= prod[i];
-      }
-      if (K == 64)
-      {
-        prod[i - K + 33] ^= prod[i];
-        prod[i - K + 30] ^= prod[i];
-        prod[i - K + 26] ^= prod[i];
-        prod[i - K + 25] ^= prod[i];
-        prod[i - K + 24] ^= prod[i];
-        prod[i - K + 23] ^= prod[i];
-        prod[i - K + 22] ^= prod[i];
-        prod[i - K + 21] ^= prod[i];
-        prod[i - K + 20] ^= prod[i];
-        prod[i - K + 18] ^= prod[i];
-        prod[i - K + 13] ^= prod[i];
-        prod[i - K + 12] ^= prod[i];
-        prod[i - K + 11] ^= prod[i];
-        prod[i - K + 10] ^= prod[i];
-        prod[i - K + 7] ^= prod[i];
-        prod[i - K + 5] ^= prod[i];
-        prod[i - K + 4] ^= prod[i];
-        prod[i - K + 2] ^= prod[i];
-        prod[i - K + 1] ^= prod[i];
-        prod[i - K + 0] ^= prod[i];
-      }
-      if (K == 32)
-      {
-        // 32
-        prod[i - K + 15] ^= prod[i];
-        prod[i - K + 9] ^= prod[i];
-        prod[i - K + 7] ^= prod[i];
-        prod[i - K + 4] ^= prod[i];
-        prod[i - K + 3] ^= prod[i];
-        prod[i - K + 0] ^= prod[i];
-      }
-      if (K == 16)
-      {
-        // 16
-        prod[i - K + 5] ^= prod[i];
-        prod[i - K + 3] ^= prod[i];
-        prod[i - K + 2] ^= prod[i];
-        prod[i - K + 0] ^= prod[i];
-      }
-      if (K == 8)
-      {
-        // 8
-        prod[i - K + 4] ^= prod[i];
-        prod[i - K + 3] ^= prod[i];
-        prod[i - K + 2] ^= prod[i];
-        prod[i - K + 0] ^= prod[i];
-      }
-      if (K == 4)
-      {
-        // 4
-        prod[i - K + 1] ^= prod[i];
-        prod[i - K + 0] ^= prod[i];
-      }
+      // GF(2^512) from sage
+      prod[i - K + 8] ^= prod[i];
+      prod[i - K + 5] ^= prod[i];
+      prod[i - K + 2] ^= prod[i];
+      prod[i - K + 0] ^= prod[i];
+    }
+    if (K == 256)
+    {
+      // GF(2^256) from sage
+      prod[i - K + 10] ^= prod[i];
+      prod[i - K + 5] ^= prod[i];
+      prod[i - K + 2] ^= prod[i];
+      prod[i - K + 0] ^= prod[i];
+    }
+    if (K == 128)
+    {
+      // 128
+      prod[i - K + 7] ^= prod[i];
+      prod[i - K + 2] ^= prod[i];
+      prod[i - K + 1] ^= prod[i];
+      prod[i - K + 0] ^= prod[i];
+    }
+    if (K == 32)
+    {
+      // 32
+      prod[i - K + 15] ^= prod[i];
+      prod[i - K + 9] ^= prod[i];
+      prod[i - K + 7] ^= prod[i];
+      prod[i - K + 4] ^= prod[i];
+      prod[i - K + 3] ^= prod[i];
+      prod[i - K + 0] ^= prod[i];
+    }
+    if (K == 16)
+    {
+      // 16
+      prod[i - K + 5] ^= prod[i];
+      prod[i - K + 3] ^= prod[i];
+      prod[i - K + 2] ^= prod[i];
+      prod[i - K + 0] ^= prod[i];
+    }
+    if (K == 8)
+    {
+      // 8
+      prod[i - K + 4] ^= prod[i];
+      prod[i - K + 3] ^= prod[i];
+      prod[i - K + 2] ^= prod[i];
+      prod[i - K + 0] ^= prod[i];
+    }
+    if (K == 4)
+    {
+      // 4
+      prod[i - K + 1] ^= prod[i];
+      prod[i - K + 0] ^= prod[i];
     }
   }
+
   for (i = 0; i < K; i++)
     out[i] = prod[i];
 }
@@ -3690,56 +3575,44 @@ aa:
   l = -1;
   vec pp = {0}, tt = {0};
 
-  if (E % 2 == 1)
+  
+          while (l < 0)
+          {
+              for (i = 0; i < K; i++)
+                  pp.x[i] = rand() % N;
+              mykey(tt.x, pp);
+              tt.x[K] = 1;
+              l = ben_or(v2o(tt));
+              if (l == 0)
+              {
+                  printf("\n");
+                  printsage(tt);
+                  printf(" ==irr\n");
+                  // exit(1);
+              }
+          }
+          //w = v2o(tt);
+  
+ /*
+  l = -1;
+  while (l == -1)
   {
-    for (i = 0; i < K; i++)
-      pp.x[i] = rand() % N;
-    tt.x[K] = 1;
-    mykey(tt.x, pp);
-    l = ben_or(v2o(tt));
-    if (l < 0)
-      exit(1);
-  }
-  else
-  {
-    while (l < 0)
+    w = mkpol();
+    l = ben_or(w);
+    printf("irr=%d\n", l);
+    if (ii > 300)
     {
-      tt = o2v(mkpol());
-      tt.x[K] = 1;
-      l = ben_or(v2o(tt));
-      if (l == 0)
-      {
-        printf("\n");
-        printsage(tt);
-        printf(" ==irr\n");
-        // exit(1);
-      }
-      // if(l<0)
-      // exit(1);
+      printf("too many tryal\n");
+      exit(1);
     }
+    printf("ben=%d\n", ii);
+    ii++;
+    //
   }
-  // w = v2o(tt);
-
-  /*
-   l = -1;
-   while (l == -1)
-   {
-     w = mkpol();
-     l = ben_or(w);
-     printf("irr=%d\n", l);
-     if (ii > 300)
-     {
-       printf("too many tryal\n");
-       exit(1);
-     }
-     printf("ben=%d\n", ii);
-     ii++;
-     //
-   }
- */
+*/
   // w = mkpol();
-
-  w = setpol(tt.x, K + 1);
+  
+  w = setpol(tt.x,K+1);
 
   // 多項式の値が0でないことを確認
   for (i = 0; i < N; i++)
@@ -3789,8 +3662,8 @@ aa:
   */
 
   van();
-  for (int i = 0; i < K; i++)
-    g[i] = tt.x[i];
+  for(int i=0;i<K;i++)
+  g[i]=tt.x[i];
   ogt();
   memset(mat, 0, sizeof(mat));
 
@@ -3952,9 +3825,9 @@ OP pubkeygen()
   printf(" ==goppa polynomial\n");
 
   v = o2v(w);
-  // fp = fopen("sk.key", "wb");
-  // fwrite(g, 2, K + 1, fp);
-  // fclose(fp);
+  fp = fopen("sk.key", "wb");
+  fwrite(g, 2, K + 1, fp);
+  fclose(fp);
   oprintpol(w);
   printf("\n");
   printsage(o2v(w));
@@ -3966,10 +3839,10 @@ OP pubkeygen()
   // exit(1);
 
   Pgen();
-  // fp = fopen("P.key", "w");
-  //   fwrite(P, 2, N, fp);
-  // fclose(fp);
-  //  makeS();
+  fp = fopen("P.key", "w");
+  //  fwrite(P, 2, N, fp);
+  fclose(fp);
+  // makeS();
   do
   {
     memset(Q.x, 0, sizeof(Q.x));
@@ -4277,11 +4150,11 @@ int ero2(vec v)
   {
     if (i == 0)
     {
-      //xa[v.x[i]] = 1;
+      xa[v.x[i]] = 1;
       // printf("error position=%d %d う\n", i, v.x[i]);
-      //count++;
+      count++;
     }
-    if (v.x[i] > 0)
+    if (i > 0 && v.x[i] > 0)
     {
       xa[v.x[i]] = 1;
       // printf("error position=%d %d お\n", i, v.x[i]);
@@ -4340,11 +4213,11 @@ int ero2(vec v)
   {
     if (ya[i] > 0 && i == 0)
     {
-      printf("error position=%d %d う\n", i,ya[i]);
+      printf("error position=%d う\n", i);
     }
     else if (ya[i] > 0)
     {
-      printf("error position=%d %d お\n", i,ya[i]);
+      printf("error position=%d お\n", i);
     }
   }
   // exit(1);
@@ -4658,21 +4531,6 @@ int main(void)
     exit(1);
   }
   gen_gf(E, N, 1);
-  printf("GF[%d] の生成に成功しました。\n", N);
-
-
-Uh uu;
-
-for(int i=0;i<16;i++)
-uu.x[i]=i;
-for(int i=0;i<16;i++)
-printf("x=%d,",uu.x[i]);
-printf("\n");
-for(int i=0;i<4;i++)
-printf("%llx,",uu.d[i]);
-printf("\n");
-//exit(1);
-
   // kabatiansky example
   unsigned short s[K + 1] = {0, 15, 1, 9, 13, 1, 14};
   // Berlekamp-Massey法（UnderConstruction）
@@ -4682,10 +4540,10 @@ printf("\n");
   int j = 0;
 
   // chu();
-  // w = mkg();
+  //w = mkg();
 
   // 公開鍵を生成する
-  w = pubkeygen();
+   w = pubkeygen();
 
   while (1)
   {
@@ -4693,15 +4551,17 @@ printf("\n");
     // エラーベクトルを生成する
     memset(z1, 0, sizeof(z1));
     mkerr(z1, T * 2);
-    /*
-        f = synd(z1);
-        v = patterson(w, f);
-        ero(v);
-        exit(1);
-    */
+    //for(int i=0;i<K;i++)
+    //z1[i]=1;
+/*
+    f = synd(z1);
+    v = patterson(w, f);
+    ero(v);
+    exit(1);
+*/
     // encryotion
-    // test(w, z1);
-    // wait();
+    test(w, z1);
+    //wait();
 
     // シンドロームを計算する
     f = zin(z1);
