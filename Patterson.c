@@ -4606,12 +4606,15 @@ int main(void)
 
   // 公開鍵を生成する
   w = pubkeygen();
+  // op will extention
+  /*
   printsage(o2v(w));
   printf(" sage\n");
   printpol(o2v(w));
   printf("\n");
   exit(1);
-
+  */
+  
   while (1)
   {
 
