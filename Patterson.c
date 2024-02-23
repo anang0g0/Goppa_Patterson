@@ -33,8 +33,8 @@
 #include "lu.c"
 #include "sha3.c"
 #include "inv_mat.c"
-// #include "vc3000.c"
-//  #include "golay.c"
+//#include "vc3000.c"
+// #include "golay.c"
 
 // #define TH omp_get_max_threads()
 #define REG 64
@@ -2275,13 +2275,13 @@ void toByte(MTX SH)
     // #pragma omp parallel for
     for (j = 0; j < K; j++)
     {
-      unsigned short x = 0;
-      cnt = 0;
-      // for (k = j * E; k < j * E + E; k++)
-      for (int l = 0; l < E; l++)
-        x ^= (SH.x[i][k] << l);
-
-      HH[i][j] = x; // v2i(v);
+    unsigned short x=0;
+        k = j * E;
+        x=0;
+        for (int l = 0; l < E; l++){
+          x ^= (SH.x[i][k + l]<<l);
+          }
+        HH[i][j] = x;//v2i(v);
       // printf("%d,", HH[i][j]);
       //= BH[j][i];
     }
@@ -3340,64 +3340,64 @@ void GF_mul(unsigned short *out, unsigned short *in0, unsigned short *in1)
       prod[i - K + 1] ^= prod[i];
       prod[i - K + 0] ^= prod[i];
     }
-    if (K == 96)
-    {
-      prod[i - K + 63] ^= prod[i];
-      prod[i - K + 61] ^= prod[i];
-      prod[i - K + 60] ^= prod[i];
-      prod[i - K + 59] ^= prod[i];
-      prod[i - K + 54] ^= prod[i];
-      prod[i - K + 50] ^= prod[i];
-      prod[i - K + 46] ^= prod[i];
-      prod[i - K + 44] ^= prod[i];
-      prod[i - K + 40] ^= prod[i];
-      prod[i - K + 37] ^= prod[i];
-      prod[i - K + 33] ^= prod[i];
-      prod[i - K + 32] ^= prod[i];
-      prod[i - K + 28] ^= prod[i];
-      prod[i - K + 24] ^= prod[i];
-      prod[i - K + 23] ^= prod[i];
-      prod[i - K + 21] ^= prod[i];
-      prod[i - K + 20] ^= prod[i];
-      prod[i - K + 19] ^= prod[i];
-      prod[i - K + 18] ^= prod[i];
-      prod[i - K + 16] ^= prod[i];
-      prod[i - K + 15] ^= prod[i];
-      prod[i - K + 14] ^= prod[i];
-      prod[i - K + 13] ^= prod[i];
-      prod[i - K + 11] ^= prod[i];
-      prod[i - K + 9] ^= prod[i];
-      prod[i - K + 8] ^= prod[i];
-      prod[i - K + 7] ^= prod[i];
-      prod[i - K + 6] ^= prod[i];
-      prod[i - K + 4] ^= prod[i];
-      prod[i - K + 3] ^= prod[i];
-      prod[i - K + 2] ^= prod[i];
-      prod[i - K + 0] ^= prod[i];
-    }
-    if (K == 64)
-    {
-      prod[i - K + 33] ^= prod[i];
-      prod[i - K + 30] ^= prod[i];
-      prod[i - K + 26] ^= prod[i];
-      prod[i - K + 25] ^= prod[i];
-      prod[i - K + 24] ^= prod[i];
-      prod[i - K + 23] ^= prod[i];
-      prod[i - K + 22] ^= prod[i];
-      prod[i - K + 21] ^= prod[i];
-      prod[i - K + 20] ^= prod[i];
-      prod[i - K + 18] ^= prod[i];
-      prod[i - K + 13] ^= prod[i];
-      prod[i - K + 12] ^= prod[i];
-      prod[i - K + 11] ^= prod[i];
-      prod[i - K + 10] ^= prod[i];
-      prod[i - K + 7] ^= prod[i];
-      prod[i - K + 5] ^= prod[i];
-      prod[i - K + 4] ^= prod[i];
-      prod[i - K + 2] ^= prod[i];
-      prod[i - K + 1] ^= prod[i];
-      prod[i - K + 0] ^= prod[i];
-    }
+             if (K == 96)
+      {
+        prod[i - K + 63] ^= prod[i];
+        prod[i - K + 61] ^= prod[i];
+        prod[i - K + 60] ^= prod[i];
+        prod[i - K + 59] ^= prod[i];
+        prod[i - K + 54] ^= prod[i];
+        prod[i - K + 50] ^= prod[i];
+        prod[i - K + 46] ^= prod[i];
+        prod[i - K + 44] ^= prod[i];
+        prod[i - K + 40] ^= prod[i];
+        prod[i - K + 37] ^= prod[i];
+        prod[i - K + 33] ^= prod[i];
+        prod[i - K + 32] ^= prod[i];
+        prod[i - K + 28] ^= prod[i];
+        prod[i - K + 24] ^= prod[i];
+        prod[i - K + 23] ^= prod[i];
+        prod[i - K + 21] ^= prod[i];
+        prod[i - K + 20] ^= prod[i];
+        prod[i - K + 19] ^= prod[i];
+        prod[i - K + 18] ^= prod[i];
+        prod[i - K + 16] ^= prod[i];
+        prod[i - K + 15] ^= prod[i];
+        prod[i - K + 14] ^= prod[i];
+        prod[i - K + 13] ^= prod[i];
+        prod[i - K + 11] ^= prod[i];
+        prod[i - K + 9] ^= prod[i];
+        prod[i - K + 8] ^= prod[i];
+        prod[i - K + 7] ^= prod[i];
+        prod[i - K + 6] ^= prod[i];
+        prod[i - K + 4] ^= prod[i];
+        prod[i - K + 3] ^= prod[i];
+        prod[i - K + 2] ^= prod[i];
+        prod[i - K + 0] ^= prod[i];
+      }
+      if (K == 64)
+      {
+        prod[i - K + 33] ^= prod[i];
+        prod[i - K + 30] ^= prod[i];
+        prod[i - K + 26] ^= prod[i];
+        prod[i - K + 25] ^= prod[i];
+        prod[i - K + 24] ^= prod[i];
+        prod[i - K + 23] ^= prod[i];
+        prod[i - K + 22] ^= prod[i];
+        prod[i - K + 21] ^= prod[i];
+        prod[i - K + 20] ^= prod[i];
+        prod[i - K + 18] ^= prod[i];
+        prod[i - K + 13] ^= prod[i];
+        prod[i - K + 12] ^= prod[i];
+        prod[i - K + 11] ^= prod[i];
+        prod[i - K + 10] ^= prod[i];
+        prod[i - K + 7] ^= prod[i];
+        prod[i - K + 5] ^= prod[i];
+        prod[i - K + 4] ^= prod[i];
+        prod[i - K + 2] ^= prod[i];
+        prod[i - K + 1] ^= prod[i];
+        prod[i - K + 0] ^= prod[i];
+      }
     if (K == 32)
     {
       // 32
@@ -3635,43 +3635,44 @@ aa:
   l = -1;
   vec pp = {0}, tt = {0};
 
-  while (l < 0)
+  
+          while (l < 0)
+          {
+              for (i = 0; i < K; i++)
+                  pp.x[i] = rand() % N;
+              mykey(tt.x, pp);
+              tt.x[K] = 1;
+              l = ben_or(v2o(tt));
+              if (l == 0)
+              {
+                  printf("\n");
+                  printsage(tt);
+                  printf(" ==irr\n");
+                  // exit(1);
+              }
+          }
+          //w = v2o(tt);
+  
+ /*
+  l = -1;
+  while (l == -1)
   {
-    for (i = 0; i < K; i++)
-      pp.x[i] = rand() % N;
-    mykey(tt.x, pp);
-    tt.x[K] = 1;
-    l = ben_or(v2o(tt));
-    if (l == 0)
+    w = mkpol();
+    l = ben_or(w);
+    printf("irr=%d\n", l);
+    if (ii > 300)
     {
-      printf("\n");
-      printsage(tt);
-      printf(" ==irr\n");
-      // exit(1);
+      printf("too many tryal\n");
+      exit(1);
     }
+    printf("ben=%d\n", ii);
+    ii++;
+    //
   }
-  // w = v2o(tt);
-
-  /*
-   l = -1;
-   while (l == -1)
-   {
-     w = mkpol();
-     l = ben_or(w);
-     printf("irr=%d\n", l);
-     if (ii > 300)
-     {
-       printf("too many tryal\n");
-       exit(1);
-     }
-     printf("ben=%d\n", ii);
-     ii++;
-     //
-   }
- */
+*/
   // w = mkpol();
-
-  w = setpol(tt.x, K + 1);
+  
+  w = setpol(tt.x,K+1);
 
   // 多項式の値が0でないことを確認
   for (i = 0; i < N; i++)
@@ -3721,8 +3722,8 @@ aa:
   */
 
   van();
-  for (int i = 0; i < K; i++)
-    g[i] = tt.x[i];
+  for(int i=0;i<K;i++)
+  g[i]=tt.x[i];
   ogt();
   memset(mat, 0, sizeof(mat));
 
@@ -4308,7 +4309,8 @@ int ero2(vec v)
       */
     printf("へげえええーっ\n");
     // exit(1);
-    exit(1);
+    return -1;
+    //exit(1);
   }
 
   return count;
@@ -4595,14 +4597,20 @@ int main(void)
   // Berlekamp-Massey法（UnderConstruction）
   // bms(s);
   // exit(1);
+  // g=4x^4+1x^2+8x^1+1x^0, e={3,4,9,11} <- bug finder
 
   int j = 0;
 
   // chu();
-  // w = mkg();
+  //w = mkg();
 
   // 公開鍵を生成する
   w = pubkeygen();
+  printsage(o2v(w));
+  printf(" sage\n");
+  printpol(o2v(w));
+  printf("\n");
+  exit(1);
 
   while (1)
   {
@@ -4610,17 +4618,17 @@ int main(void)
     // エラーベクトルを生成する
     memset(z1, 0, sizeof(z1));
     mkerr(z1, T * 2);
-    // for(int i=0;i<K;i++)
-    // z1[i]=1;
-    /*
-        f = synd(z1);
-        v = patterson(w, f);
-        ero(v);
-        exit(1);
-    */
+    //for(int i=0;i<K;i++)
+    //z1[i]=1;
+/*
+    f = synd(z1);
+    v = patterson(w, f);
+    ero(v);
+    exit(1);
+*/
     // encryotion
     test(w, z1);
-    // wait();
+    //wait();
 
     // シンドロームを計算する
     f = zin(z1);
@@ -4631,7 +4639,11 @@ int main(void)
     v = patterson(w, f);
 
     // エラー表示
-    ero2(v);
+    if(ero2(v)<0){
+    for(int i=0;i<N;i++)
+    if(z1[i]>0)
+    printf("i=%d\n",i);
+    }
 
     break;
   }
