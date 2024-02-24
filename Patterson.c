@@ -2298,15 +2298,15 @@ void Pgen()
   unsigned int i, j;
   FILE *fp;
 
-  fp = fopen("P.key", "wb");
+  //fp = fopen("P.key", "wb");
   for (i = 0; i < N; i++)
     P[i] = i;
   random_shuffle(P, SIZE_OF_ARRAY(P));
   //  random_permutation(P);
   for (i = 0; i < N; i++)
     inv_P[P[i]] = i;
-  fwrite(P, 2, N, fp);
-  fclose(fp);
+  //fwrite(P, 2, N, fp);
+  //fclose(fp);
 
   // for (i = 0; i < N; i++)
   // printf ("%d,", inv_P[i]);
@@ -3885,9 +3885,9 @@ OP pubkeygen()
   printf(" ==goppa polynomial\n");
 
   v = o2v(w);
-  fp = fopen("sk.key", "wb");
-  fwrite(g, 2, K + 1, fp);
-  fclose(fp);
+  //fp = fopen("sk.key", "wb");
+  //fwrite(g, 2, K + 1, fp);
+  //fclose(fp);
   oprintpol(w);
   printf("\n");
   printsage(o2v(w));
@@ -4630,7 +4630,7 @@ int main(void)
     exit(1);
 */
     // encryotion
-    test(w, z1);
+    //test(w, z1);
     //wait();
 
     // シンドロームを計算する
