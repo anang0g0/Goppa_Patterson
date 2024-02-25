@@ -59,6 +59,20 @@ unsigned int AA = 0, B = 0; //, C = 0, A2 = 0;
 unsigned short
 oinv(unsigned short a)
 {
+  if (a == 0)
+    return -1;
+
+  return (N - fg[a]) % (N-1) + 1;
+
+  printf("no return \n");
+
+  exit(1);
+}
+
+// 有限体の元の逆数
+unsigned short
+oinv2(unsigned short a)
+{
   int i;
 
   if (a == 0)
@@ -71,7 +85,7 @@ oinv(unsigned short a)
   }
 
   printf("no return \n");
-  //  exit (1);
+  exit (1);
 }
 
 // aに何をかけたらbになるか
@@ -1889,6 +1903,109 @@ int oequ(OP f, OP g)
 
 // GF(2^m) then set m in this function.
 int ben_or(OP f)
+{
+  int i, n, flg = 0;
+  OP s = {0}, u = {0}, r = {0};
+  vec v = {0}, x = {0};
+  // if GF(8192) is 2^m and m==13 or if GF(4096) and m==12 if GF(16384) is testing
+  int m = E;
+  // m=12 as a for GF(4096)=2^12 defined @ gloal.h or here,for example m=4 and GF(16)
+
+  v.x[1] = 1;
+  s = v2o(v);
+  r = s;
+  n = deg(o2v(f));
+
+  if (n == 0)
+    return -1;
+
+  i = 1;
+
+  // r(x)^{q^i} square pow mod
+  // omp_set_num_threads(omp_get_max_threads());
+  /*
+    #pragma omp parallel num_threads(8) //omp_get_max_threads()) //num_threads(TH)
+    {
+      // #pragma omp parallel for
+      #pragma omp for schedule(static)
+      for (i = 0; i < n/2+1; i++)
+      {
+        t[i] = bib(i, d);
+      }
+    }
+  */
+  if (E % 2 == 1)
+  {
+#pragma omp parallel num_threads(8) // omp_get_max_threads()) //num_threads(TH)
+    {
+      // #pragma omp parallel for
+#pragma omp for schedule(static)
+      for (i = 0; i < n / 2 + 1; i++)
+      {
+        printf("i=%d\n", i);
+
+        flg = 1;
+        // irreducible over GH(8192) 2^13
+        r = opowmod(r, f, m);
+
+        // irreducible over GF2
+        // r=omod(opow(r,2),f);
+
+        u = oadd(r, s);
+        if (deg(o2v(u)) == 0 && LT(u).a == 0)
+          exit(1); // return -1;
+        if (deg(o2v(u)) == 0 && LT(u).a == 1)
+        {
+          // i++;
+          flg = 0;
+        }
+        if (deg(o2v(u)) > 0)
+          u = gcd(f, u);
+
+        if (deg(o2v(u)) > 0)
+          exit(1); // return -1;
+
+        // if (flg == 1)
+        //   i++;
+      }
+    }
+  }
+  else
+  {
+    for (i = 0; i < n / 2 + 1; i++)
+    {
+      printf("i=%d\n", i);
+
+      flg = 1;
+      // irreducible over GH(8192) 2^13
+      r = opowmod(r, f, m);
+
+      // irreducible over GF2
+      // r=omod(opow(r,2),f);
+
+      u = oadd(r, s);
+      if (deg(o2v(u)) == 0 && LT(u).a == 0)
+        return -1;
+      if (deg(o2v(u)) == 0 && LT(u).a == 1)
+      {
+        // i++;
+        flg = 0;
+      }
+      if (deg(o2v(u)) > 0)
+        u = gcd(f, u);
+
+      if (deg(o2v(u)) > 0)
+        return -1;
+
+      // if (flg == 1)
+      //   i++;
+    }
+  }
+  return 0;
+}
+
+// GF(2^m) then set m in this function.
+int ben_her(OP f)
 {
   int i, n, flg = 0;
   OP s = {0}, u = {0}, r = {0};
@@ -3908,6 +4025,7 @@ OP pubkeygen()
     memset(Q.x, 0, sizeof(Q.x));
     memset(O.x, 0, sizeof(O.x));
     memset(S.x, 0, sizeof(S.x));
+  
     for (i = 0; i < (K)*E; i++)
     {
       for (j = 0; j < (K)*E; j++)
@@ -4603,6 +4721,9 @@ int main(void)
 
   // chu();
   //w = mkg();
+  for(int i=0;i<N;i++)
+  printf("%d %d\n",oinv(i),oinv2(i));
+  //exit(1);
 
   // 公開鍵を生成する
   w = pubkeygen();
