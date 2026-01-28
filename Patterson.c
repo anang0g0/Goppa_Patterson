@@ -2742,10 +2742,6 @@ vec paloma(OP s, OP f)
 
     /* g12 = f / (g1*g2) */
     OP g1g2 = omul(g1, g2);
-    if (odeg(omod(f, g1g2)) >= 0) {
-        printf("f not divisible by g1*g2\n");
-      //  exit(1);
-    }
     g12 = odiv(f, g1g2);
 
     if (odeg(g12) < K - 1) {
@@ -2792,7 +2788,8 @@ vec paloma(OP s, OP f)
         b0 = b1;
         b1 = b2;
 
-        if (odeg(a0) <= K/2 - odeg(g1) &&
+        /* 病的ケース対応 */
+        if (odeg(a0) == K/2 - odeg(g1) &&
             odeg(b0) <= (K-1)/2 - odeg(g2))
             break;
 
@@ -2814,6 +2811,16 @@ vec paloma(OP s, OP f)
     if (odeg(sigma) != K) {
         printf("warning: deg(sigma) != K\n");
     }
+
+    /* デバッグ用（病的ケースチェック） */
+    /*
+    oprintpol(g1); printf(" = g1\n");
+    oprintpol(g2); printf(" = g2\n");
+    oprintpol(g12); printf(" = g12\n");
+    oprintpol(a); printf(" = a\n");
+    oprintpol(b); printf(" = b\n");
+    oprintpol(sigma); printf(" = sigma\n");
+    */
 
     return chen(sigma);
 }
